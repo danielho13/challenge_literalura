@@ -1,31 +1,25 @@
 package com.aluracursos.challenge_literalura.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+
 import java.util.List;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
-@Table(name = "autor")
+@Table (name = "autores")
 public class Autor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonAlias("name")
     private String nombre;
 
-    @JsonAlias("birth_year")
     private int nacimiento;
 
-    @JsonAlias("death_year")
-    private int fallecimiento;
+    private Integer fallecimiento;
 
-    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "autor",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Libro> libros;
 
-    // Getters y Setters
     public Long getId() {
         return id;
     }
@@ -50,11 +44,11 @@ public class Autor {
         this.nacimiento = nacimiento;
     }
 
-    public int getFallecimiento() {
+    public Integer getFallecimiento() {
         return fallecimiento;
     }
 
-    public void setFallecimiento(int fallecimiento) {
+    public void setFallecimiento(Integer fallecimiento) {
         this.fallecimiento = fallecimiento;
     }
 
@@ -68,11 +62,12 @@ public class Autor {
 
     @Override
     public String toString() {
-        return "Nombre: " + nombre +
-                ", Nacimiento: " + (nacimiento != 0 ? nacimiento : "N/A") +
-                ", Fallecimiento: " + (fallecimiento != 0 ? fallecimiento : "N/A");
+        return "Autor{" +
+                "nacimiento=" + nacimiento +
+                ", libros=" + libros +
+                ", fallecimiento=" + fallecimiento +
+                ", nombre='" + nombre + '\'' +
+                ", id=" + id +
+                '}';
     }
 }
-
-
-

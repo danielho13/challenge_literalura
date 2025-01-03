@@ -1,45 +1,29 @@
 package com.aluracursos.challenge_literalura.service;
+import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.aluracursos.challenge_literalura.model.Libro;
-import org.springframework.stereotype.Service;
-
-import java.net.http.HttpResponse;
-import java.net.http.HttpRequest;
-import java.net.http.HttpClient;
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
-@Service
+@Component
 public class ConsumoAPI {
-
-    private static final String BASE_URL = "https://gutendex.com/books/";
-    private final HttpClient clienteHttp;
-
-    public ConsumoAPI() {
-        this.clienteHttp = HttpClient.newHttpClient();
-    }
-
-    public List<Libro> buscarLibrosPorTitulo(String titulo) {
+    public String obtenerDatos(String url){
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .build();
+        HttpResponse<String> response = null;
         try {
-            String url = BASE_URL + "?search=" + titulo;
-            HttpRequest solicitud = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .GET()
-                    .build();
-
-            HttpResponse<String> respuesta = clienteHttp.send(solicitud, HttpResponse.BodyHandlers.ofString());
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode nodoRaiz = mapper.readTree(respuesta.body());
-            JsonNode resultados = nodoRaiz.get("results");
-
-            // Mapear los resultados a una lista de libros
-            return mapper.readerForListOf(Libro.class).readValue(resultados);
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            return List.of();
+            response = client
+                    .send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
+        String json = response.body();
+        return json;
     }
 }
